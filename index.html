@@ -323,7 +323,8 @@
         import { 
             getFirestore, doc, addDoc, setDoc, updateDoc, deleteDoc, 
             onSnapshot, collection, query, where, getDocs, serverTimestamp,
-            runTransaction, Timestamp, orderBy // <-- BARU: Menambahkan 'orderBy'
+            runTransaction, Timestamp, orderBy,
+            collectionGroup // <-- PERBAIKAN: Impor 'collectionGroup'
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // === KONFIGURASI APLIKASI ===
@@ -344,7 +345,8 @@
 
         // Inisialisasi Firebase
         let app, auth, db, userId;
-        let menuCollection, ordersCollection, countersCollection; 
+        // PERBAIKAN: 'ordersCollection' dihapus dari sini karena kita akan pakai collectionGroup
+        let menuCollection, countersCollection; 
 
         const checkoutButton = document.getElementById('checkout-button');
         const checkoutDbStatus = document.getElementById('checkout-db-status');
@@ -357,7 +359,7 @@
 
             const basePath = `artifacts/${appId}/public/data`;
             menuCollection = collection(db, `${basePath}/menu`);
-            ordersCollection = collection(db, `${basePath}/orders`);
+            // PERBAIKAN: Baris 'ordersCollection' dihapus
             countersCollection = collection(db, `${basePath}/counters`);
 
 
@@ -402,7 +404,7 @@
         let currentService = 'Dine In';
         let currentItemToAdd = null; 
         let pendingOrderObject = null; 
-        let loggedInUserPhone = null; // BARU: Variabel status login
+        let loggedInUserPhone = null; 
 
         const SERVICE_FEE = 2000;
         const DELIVERY_FEE = 12000;
@@ -418,7 +420,6 @@
         window.handleCheckout = handleCheckout;
         window.closePaymentInfoModal = closePaymentInfoModal;
         window.handleConfirmPayment = handleConfirmPayment;
-        // BARU: Menambahkan fungsi baru ke window
         window.showHistoryPage = showHistoryPage;
         window.handleLogin = handleLogin;
         window.handleLogout = handleLogout;
@@ -429,11 +430,9 @@
                 console.warn("PENTING: Jangan lupa ganti 'ADMIN_PHONE_NUMBER' di file pelanggan.html");
             }
 
-            // BARU: Cek status login dari localStorage
             loggedInUserPhone = localStorage.getItem('dapurOmahUserPhone');
             if (loggedInUserPhone) {
                 console.log('User sudah login dengan No. HP:', loggedInUserPhone);
-                // Otomatis isi nomor telepon di halaman keranjang
                 const customerPhoneEl = document.getElementById('customer-phone');
                 if (customerPhoneEl) {
                     customerPhoneEl.value = loggedInUserPhone;
@@ -476,7 +475,6 @@
             }).format(number);
         }
 
-        // BARU: Fungsi untuk format tanggal dari timestamp
         function formatTanggal(timestamp) {
             if (!timestamp || !timestamp.toDate) {
                 return 'Tanggal tidak valid';
@@ -858,6 +856,10 @@
             checkoutButton.innerText = 'Mengirim Pesanan...';
             
             try {
+                // Mendapatkan path lengkap untuk orders collection
+                const basePath = `artifacts/${appId}/public/data`;
+                const fullOrdersCollection = collection(db, `${basePath}/orders`);
+
                 await runTransaction(db, async (transaction) => {
                     const todayStr = getTodayString();
                     const counterRef = doc(countersCollection, 'dailyCounter');
@@ -873,13 +875,13 @@
                     
                     orderObject.queueNumber = newQueueNumber; 
                     
-                    const newOrderRef = doc(ordersCollection); 
+                    // Simpan pesanan ke path yang benar
+                    const newOrderRef = doc(fullOrdersCollection); 
                     transaction.set(newOrderRef, orderObject);
                 });
 
                 console.log("Pesanan berhasil dikirim dengan nomor antrian: ", orderObject.queueNumber);
 
-                // BARU: Set status login setelah berhasil order
                 if (orderObject.customerPhone) {
                     loggedInUserPhone = orderObject.customerPhone;
                     localStorage.setItem('dapurOmahUserPhone', orderObject.customerPhone);
@@ -899,10 +901,9 @@
                 renderCart();
                 updateCartCountBadge();
                 document.getElementById('customer-name').value = '';
-                document.getElementById('customer-phone').value = ''; // Nomor HP tetap terisi karena DOMContentLoaded akan mengisinya lagi jika login
+                document.getElementById('customer-phone').value = ''; 
                 document.getElementById('address').value = '';
                 
-                // BARU: Isi ulang No HP jika user login
                 if(loggedInUserPhone) {
                     document.getElementById('customer-phone').value = loggedInUserPhone;
                 }
@@ -921,7 +922,7 @@
             }
         }
         
-        // ===== BARU: FUNGSI LOGIN & RIWAYAT TRANSAKSI =====
+        // ===== FUNGSI LOGIN & RIWAYAT TRANSAKSI (DENGAN PERBAIKAN) =====
 
         function showHistoryPage() {
             if (loggedInUserPhone) {
@@ -944,7 +945,6 @@
             loggedInUserPhone = phoneValue;
             localStorage.setItem('dapurOmahUserPhone', phoneValue);
             
-            // Otomatis isi juga di halaman keranjang
             document.getElementById('customer-phone').value = loggedInUserPhone;
             
             showNotification('Login berhasil! Memuat riwayat...', 'success');
@@ -971,11 +971,16 @@
             container.innerHTML = '';
 
             try {
+                // --- INI BAGIAN YANG DIPERBAIKI ---
+                // Kita menggunakan collectionGroup('orders') untuk mencari di SEMUA
+                // koleksi yang bernama 'orders', di mana pun letaknya.
+                // Ini JAUH lebih baik dan lebih mudah untuk diindeks.
                 const q = query(
-                    ordersCollection, 
+                    collectionGroup(db, 'orders'), // <-- PERBAIKAN KODE
                     where("customerPhone", "==", loggedInUserPhone),
                     orderBy("createdAt", "desc")
                 );
+                // ---------------------------------
 
                 const querySnapshot = await getDocs(q);
 
@@ -987,7 +992,6 @@
                     querySnapshot.forEach(doc => {
                         const order = doc.data();
                         
-                        // Fungsi untuk mendapatkan warna status
                         const getStatusBadge = (status) => {
                             switch(status) {
                                 case 'Selesai': return 'bg-green-100 text-green-800';
@@ -1050,6 +1054,7 @@
             } catch (error) {
                 console.error("Gagal memuat riwayat transaksi: ", error);
                 loadingEl.style.display = 'none';
+                // Tampilkan pesan error yang dilihat pengguna di screenshot
                 container.innerHTML = '<p class="text-center text-red-500">Gagal memuat riwayat. Coba lagi nanti.</p>';
             }
         }

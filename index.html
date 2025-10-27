@@ -324,7 +324,7 @@
             getFirestore, doc, addDoc, setDoc, updateDoc, deleteDoc, 
             onSnapshot, collection, query, where, getDocs, serverTimestamp,
             runTransaction, Timestamp, orderBy,
-            collectionGroup // <-- PERBAIKAN: Impor 'collectionGroup'
+            collectionGroup // <-- INI KODE BARU YANG PENTING
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // === KONFIGURASI APLIKASI ===
@@ -345,7 +345,6 @@
 
         // Inisialisasi Firebase
         let app, auth, db, userId;
-        // PERBAIKAN: 'ordersCollection' dihapus dari sini karena kita akan pakai collectionGroup
         let menuCollection, countersCollection; 
 
         const checkoutButton = document.getElementById('checkout-button');
@@ -359,7 +358,6 @@
 
             const basePath = `artifacts/${appId}/public/data`;
             menuCollection = collection(db, `${basePath}/menu`);
-            // PERBAIKAN: Baris 'ordersCollection' dihapus
             countersCollection = collection(db, `${basePath}/counters`);
 
 
@@ -971,12 +969,11 @@
             container.innerHTML = '';
 
             try {
-                // --- INI BAGIAN YANG DIPERBAIKI ---
-                // Kita menggunakan collectionGroup('orders') untuk mencari di SEMUA
-                // koleksi yang bernama 'orders', di mana pun letaknya.
-                // Ini JAUH lebih baik dan lebih mudah untuk diindeks.
+                // --- INI BAGIAN YANG PENTING ---
+                // Kode ini menggunakan 'collectionGroup'
+                // Ini SESUAI dengan Indeks 'Collection group' yang Anda buat
                 const q = query(
-                    collectionGroup(db, 'orders'), // <-- PERBAIKAN KODE
+                    collectionGroup(db, 'orders'), // <-- KODE YANG BENAR
                     where("customerPhone", "==", loggedInUserPhone),
                     orderBy("createdAt", "desc")
                 );

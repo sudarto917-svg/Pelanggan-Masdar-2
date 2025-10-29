@@ -314,14 +314,12 @@
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
 
-            // DIPERBARUI: basePath diubah menjadi string kosong ('')
-            // Ini akan mencari koleksi "menu", "orders", dan "counters"
-            // langsung di root database Anda.
-            const basePath = ''; 
+            // DIPERBARUI: basePath dikembalikan seperti kode asli Anda
+            const basePath = `artifacts/${appId}/public/data`;
             
-            menuCollection = collection(db, `${basePath}menu`);
-            ordersCollection = collection(db, `${basePath}orders`);
-            countersCollection = collection(db, `${basePath}counters`);
+            menuCollection = collection(db, `${basePath}/menu`);
+            ordersCollection = collection(db, `${basePath}/orders`);
+            countersCollection = collection(db, `${basePath}/counters`);
             
             console.log("Firebase (Firestore) diinisialisasi.");
             loadMenuFromFirestore();

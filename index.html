@@ -274,14 +274,14 @@
         // ===            KONFIGURASI WAJIB DIISI                 ===
         // ==========================================================
 
-        // DIPERBARUI: Menggunakan firebaseConfig yang Anda berikan
+        // DIPERBARUI: Menggunakan firebaseConfig "outlet-masdar" yang benar
         const firebaseConfig = {
-            apiKey: "AIzaSyCa7cNRlEvGfckYDwXppsI0TTxEnP4fIUc",
-            authDomain: "sistem-manajemen-guru.firebaseapp.com",
-            projectId: "sistem-manajemen-guru",
-            storageBucket: "sistem-manajemen-guru.firebasestorage.app",
-            messagingSenderId: "527771743263",
-            appId: "1:527771743263:web:e8e245cccba74f1041912a"
+            apiKey: "AIzaSyDWpnos_9NRj0LVA0J6KBf4bxNtWCXF7Xw",
+            authDomain: "outlet-masdar.firebaseapp.com",
+            projectId: "outlet-masdar",
+            storageBucket: "outlet-masdar.firebasestorage.app",
+            messagingSenderId: "661483386947",
+            appId: "1:661483386947:web:0b2f26c227cb5fe130bcf6"
         };
         
         // DIPERBARUI: Menggunakan nomor WA Anda (format 62)
@@ -314,10 +314,14 @@
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
 
-            const basePath = `artifacts/${appId}/public/data`;
-            menuCollection = collection(db, `${basePath}/menu`);
-            ordersCollection = collection(db, `${basePath}/orders`);
-            countersCollection = collection(db, `${basePath}/counters`);
+            // DIPERBARUI: basePath diubah menjadi string kosong ('')
+            // Ini akan mencari koleksi "menu", "orders", dan "counters"
+            // langsung di root database Anda.
+            const basePath = ''; 
+            
+            menuCollection = collection(db, `${basePath}menu`);
+            ordersCollection = collection(db, `${basePath}orders`);
+            countersCollection = collection(db, `${basePath}counters`);
             
             console.log("Firebase (Firestore) diinisialisasi.");
             loadMenuFromFirestore();
@@ -403,10 +407,18 @@
         // ==========================================================
 
         function loadMenuFromFirestore() {
+            // Cek jika koleksi menu valid
+            if (!menuCollection) {
+                menuLoading.innerText = "Error: Koleksi menu tidak terdefinisi.";
+                console.error("menuCollection belum diinisialisasi.");
+                return;
+            }
+
             onSnapshot(menuCollection, (snapshot) => {
                 allProducts = []; 
                 if (snapshot.empty) {
                     menuLoading.innerText = "Belum ada menu yang tersedia.";
+                    console.warn("Koleksi 'menu' kosong atau tidak ditemukan di path yang benar.");
                     renderAllMenu();
                     renderPopularMenu();
                     return;
@@ -421,8 +433,13 @@
                 renderPopularMenu();
 
             }, (error) => {
-                console.error("Gagal mengambil menu: ", error);
-                menuLoading.innerText = "Gagal memuat menu. Cek koneksi.";
+                console.error("Gagal mengambil menu (onSnapshot): ", error);
+                // Tampilkan error yang lebih spesifik jika ada
+                if (error.code === 'permission-denied') {
+                    menuLoading.innerText = "Gagal memuat: Izin akses ditolak. Cek Security Rules Firebase.";
+                } else {
+                    menuLoading.innerText = "Gagal memuat menu. Cek koneksi & Security Rules.";
+                }
             });
         }
 
@@ -733,8 +750,14 @@
                 return;
             }
             if (!customerPhone.startsWith('62')) {
-                showNotification('Harap gunakan format 62 untuk No. Telepon (misal: 62812...).', 'error');
-                return;
+                // Perbaiki nomor jika user mengetik 08...
+                if (customerPhone.startsWith('08')) {
+                    customerPhone = '62' + customerPhone.substring(1);
+                    document.getElementById('customer-phone').value = customerPhone; // Perbarui di UI
+                } else {
+                    showNotification('Harap gunakan format 62 atau 08 untuk No. Telepon.', 'error');
+                    return;
+                }
             }
             if (currentService === 'Delivery' && zoneKey === '') {
                 showNotification('Harap pilih zona pengantaran!', 'error');
@@ -810,6 +833,11 @@
             checkoutButton.innerText = 'Mengirim Pesanan...';
             
             try {
+                // Pastikan koleksi orders dan counters valid
+                if (!ordersCollection || !countersCollection) {
+                    throw new Error("Koleksi database tidak terinisialisasi.");
+                }
+
                 await runTransaction(db, async (transaction) => {
                     const todayStr = getTodayString();
                     const counterRef = doc(countersCollection, 'dailyCounter');

@@ -6,6 +6,7 @@
     <title>Pesan Menu Dapur Omah</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.1.3/24/solid/heroicons.min.css" integrity="sha512-6S0noUq0GuY2J3lN1P/4xrjYjAt7h/1TnlY1uB25bZ1JqFp8r/6h/mP/bMopQp/32M7qpHp1b90/e1y1S1TfQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -43,12 +44,7 @@
                 Dapur<span class="text-emerald-500">Omah</span>.
             </a>
             <div class="flex items-center space-x-2">
-                <button onclick="showHistoryPage()" class="relative p-2 rounded-full text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
-                    </svg>
-                </button>
-                <button onclick="showPage('cart-page')" class="relative p-2 rounded-full text-gray-700 hover:bg-gray-100 transition-colors">
+                <button id="cart-button" onclick="showPage('cart-page')" class="relative p-2 rounded-full text-gray-700 hover:bg-gray-100 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" /></svg>
                     <span id="cart-count-badge" class="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
                 </button>
@@ -148,8 +144,10 @@
                         </div>
                         
                         <div id="delivery-address-form" class="mt-4" style="display: none;">
-                            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Alamat Pengantaran</label>
-                            <textarea id="address" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500" placeholder="Masukkan alamat lengkapmu..."></textarea>
+                            <label for="delivery-zone" class="block text-sm font-medium text-gray-700 mb-1">Pilih Area Pengantaran</label>
+                            <select id="delivery-zone" onchange="handleZoneChange(this.value)" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500">
+                                </select>
+                            <p id="delivery-note" class="text-sm text-gray-500 mt-2">Ongkir akan ditambahkan otomatis ke total.</p>
                         </div>
                     </div>
                 </div>
@@ -176,7 +174,7 @@
                             </div>
                             <div class="flex justify-between" id="summary-delivery-fee-row" style="display: none;">
                                 <span>Biaya Pengantaran</span>
-                                <span id="summary-delivery-fee" class="font-medium">Rp 2000</span>
+                                <span id="summary-delivery-fee" class="font-medium">Rp 0</span>
                             </div>
                         </div>
 
@@ -203,59 +201,6 @@
                     </div>
                 </div>
             </div>
-        </section>
-
-        <section id="login-page" class="page-section" style="display: none;">
-            <div class="flex items-center mb-6">
-                <button onclick="showPage('menu-page')" class="p-2 rounded-full hover:bg-gray-100 mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-700"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
-                </button>
-                <h1 class="text-3xl font-extrabold text-gray-900">Lihat Riwayat 🧾</h1>
-            </div>
-
-            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg max-w-lg mx-auto">
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Login untuk Cek Riwayat</h3>
-                <p class="text-gray-600 mb-6">Masukkan nomor telepon (WA) yang Anda gunakan saat memesan untuk melihat riwayat transaksi Anda.</p>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label for="login-phone" class="block text-sm font-medium text-gray-700 mb-1">No. Telepon (WhatsApp)</label>
-                        <input type="tel" id="login-phone" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500" placeholder="Format: 6281234...">
-                    </div>
-                    <button onclick="handleLogin()" class="w-full bg-emerald-500 text-white text-lg font-bold py-3 px-6 rounded-full hover:bg-emerald-600 transition-colors shadow-lg hover:shadow-emerald-300">
-                        Lihat Riwayat
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section id="history-page" class="page-section" style="display: none;">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center">
-                    <button onclick="showPage('menu-page')" class="p-2 rounded-full hover:bg-gray-100 mr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-700"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
-                    </button>
-                    <h1 class="text-3xl font-extrabold text-gray-900">Riwayat Transaksi</h1>
-                </div>
-                <button onclick="handleLogout()" class="text-sm text-red-500 hover:text-red-700 font-medium py-2 px-4 rounded-full hover:bg-red-50 transition-colors">
-                    Logout
-                </button>
-            </div>
-
-            <div id="history-loading" class="text-center py-10 text-gray-500">
-                <p>Memuat riwayat transaksi...</p>
-            </div>
-
-            <div id="history-empty-state" class="text-center py-12 bg-white rounded-2xl shadow" style="display: none;">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-gray-300 mx-auto mb-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                </svg>
-                <h3 class="text-xl font-semibold text-gray-700">Belum ada transaksi</h3>
-                <p class="text-gray-500">Kamu belum pernah memesan dengan nomor ini.</p>
-            </div>
-
-            <div id="history-items-container" class="space-y-6">
-                </div>
         </section>
 
     </main>
@@ -319,75 +264,72 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, doc, addDoc, setDoc, updateDoc, deleteDoc, 
             onSnapshot, collection, query, where, getDocs, serverTimestamp,
-            runTransaction, Timestamp, orderBy,
-            collectionGroup // <-- INI KODE BARU YANG PENTING
+            runTransaction, Timestamp
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // === KONFIGURASI APLIKASI ===
-        const ADMIN_PHONE_NUMBER = '6288228665260'; 
+        // ==========================================================
+        // ===            KONFIGURASI WAJIB DIISI                 ===
+        // ==========================================================
 
-        // === KONFIGURASI FIREBASE ===
+        // DIPERBARUI: Menggunakan firebaseConfig yang Anda berikan
         const firebaseConfig = {
-            apiKey: "AIzaSyDWpnos_9NRj0LVA0J6KBf4bxNtWCXF7Xw",
-            authDomain: "outlet-masdar.firebaseapp.com",
-            projectId: "outlet-masdar",
-            storageBucket: "outlet-masdar.firebasestorage.app",
-            messagingSenderId: "661483386947",
-            appId: "1:661483386947:web:0b2f26c227cb5fe130bcf6"
+            apiKey: "AIzaSyCa7cNRlEvGfckYDwXppsI0TTxEnP4fIUc",
+            authDomain: "sistem-manajemen-guru.firebaseapp.com",
+            projectId: "sistem-manajemen-guru",
+            storageBucket: "sistem-manajemen-guru.firebasestorage.app",
+            messagingSenderId: "527771743263",
+            appId: "1:527771743263:web:e8e245cccba74f1041912a"
         };
         
+        // DIPERBARUI: Menggunakan nomor WA Anda (format 62)
+        const ADMIN_PHONE_NUMBER = '6288228665260'; 
+
+        // DIPERBARUI: Menggunakan zona pengiriman yang Anda berikan
+        const DELIVERY_ZONES = {
+            "zona_a": { name: "Zona A (Satu Dusun)", price: 1000 },
+            "zona_b": { name: "Zona B (Luar Dusun)", price: 2000 },
+            "zona_c": { name: "Zona C (Luar Desa)", price: 3000 },
+            "zona_d": { name: "Zona D (Luar Kecamatan)", price: 5000 }
+        };
+        
+        // ==========================================================
+        // ===              KONFIGURASI APLIKASI                ===
+        // ==========================================================
+        
         const appId = firebaseConfig.projectId;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         // Inisialisasi Firebase
-        let app, auth, db, userId;
-        let menuCollection, countersCollection; 
+        let app, db;
+        let menuCollection, ordersCollection, countersCollection; 
 
         const checkoutButton = document.getElementById('checkout-button');
         const checkoutDbStatus = document.getElementById('checkout-db-status');
         const menuLoading = document.getElementById('menu-loading');
+        const cartButton = document.getElementById('cart-button');
 
         try {
             app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
             db = getFirestore(app);
 
             const basePath = `artifacts/${appId}/public/data`;
             menuCollection = collection(db, `${basePath}/menu`);
+            ordersCollection = collection(db, `${basePath}/orders`);
             countersCollection = collection(db, `${basePath}/counters`);
+            
+            console.log("Firebase (Firestore) diinisialisasi.");
+            loadMenuFromFirestore();
 
+            // Tampilkan UI utama
+            showPage('menu-page');
+            cartButton.style.display = 'block';
 
-            await setPersistence(auth, browserLocalPersistence);
-
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                    console.log("User terautentikasi:", userId);
-                    loadMenuFromFirestore();
-
-                    checkoutButton.disabled = false;
-                    checkoutDbStatus.textContent = 'Koneksi siap!';
-                    checkoutDbStatus.classList.add('text-green-600');
-                } else {
-                    checkoutButton.disabled = true;
-                    checkoutDbStatus.textContent = 'Menghubungkan ke server...';
-                    try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (authError) {
-                        console.error("Gagal autentikasi:", authError);
-                        checkoutDbStatus.textContent = 'Gagal terhubung. Coba refresh.';
-                        checkoutDbStatus.classList.add('text-red-600');
-                    }
-                }
-            });
+            // Aktifkan tombol checkout (jika keranjang ada isinya)
+            checkoutButton.disabled = cart.length === 0;
+            checkoutDbStatus.textContent = 'Koneksi siap!';
+            checkoutDbStatus.classList.add('text-green-600');
 
         } catch (e) {
             console.error("Gagal inisialisasi Firebase:", e);
@@ -396,18 +338,26 @@
             checkoutDbStatus.classList.add('text-red-600');
         }
         
+        // ==========================================================
+        // ===              VARIABEL GLOBAL APLIKASI            ===
+        // ==========================================================
+        
         let allProducts = []; 
         let cart = []; 
-        let currentPage = 'menu-page';
+        let currentPage = 'menu-page'; // Halaman default
         let currentService = 'Dine In';
         let currentItemToAdd = null; 
         let pendingOrderObject = null; 
-        let loggedInUserPhone = null; 
-
+        
         const SERVICE_FEE = 2000;
-        const DELIVERY_FEE = 12000;
         const FREE_SHIPPING_THRESHOLD = 75000;
         
+        let calculatedDeliveryFee = 0;
+
+        // ==========================================================
+        // ===                FUNGSI UTAMA APLIKASI             ===
+        // ==========================================================
+
         window.showPage = showPage;
         window.openAddonModal = openAddonModal;
         window.closeAddonModal = closeAddonModal;
@@ -418,28 +368,39 @@
         window.handleCheckout = handleCheckout;
         window.closePaymentInfoModal = closePaymentInfoModal;
         window.handleConfirmPayment = handleConfirmPayment;
-        window.showHistoryPage = showHistoryPage;
-        window.handleLogin = handleLogin;
-        window.handleLogout = handleLogout;
-
+        window.handleZoneChange = handleZoneChange;
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (ADMIN_PHONE_NUMBER === '628XXXXXXXXXX') {
-                console.warn("PENTING: Jangan lupa ganti 'ADMIN_PHONE_NUMBER' di file pelanggan.html");
-            }
-
-            loggedInUserPhone = localStorage.getItem('dapurOmahUserPhone');
-            if (loggedInUserPhone) {
-                console.log('User sudah login dengan No. HP:', loggedInUserPhone);
-                const customerPhoneEl = document.getElementById('customer-phone');
-                if (customerPhoneEl) {
-                    customerPhoneEl.value = loggedInUserPhone;
-                }
-            }
-
+            populateZoneOptions(); // Isi dropdown zona
             renderCart();
             updateCartCountBadge();
         });
+
+        // ==========================================================
+        // ===            FUNGSI BARU: ZONA PENGIRIMAN          ===
+        // ==========================================================
+
+        function populateZoneOptions() {
+            const select = document.getElementById('delivery-zone');
+            select.innerHTML = '<option value="">-- Pilih Zona Pengantaran --</option>';
+            for (const key in DELIVERY_ZONES) {
+                const zone = DELIVERY_ZONES[key];
+                select.innerHTML += `<option value="${key}">${zone.name} - ${formatRupiah(zone.price)}</option>`;
+            }
+        }
+        
+        function handleZoneChange(zoneKey) {
+            if (zoneKey && DELIVERY_ZONES[zoneKey]) {
+                calculatedDeliveryFee = DELIVERY_ZONES[zoneKey].price;
+            } else {
+                calculatedDeliveryFee = 0;
+            }
+            updatePaymentSummary();
+        }
+
+        // ==========================================================
+        // ===                FUNGSI INTI (MODIFIKASI)          ===
+        // ==========================================================
 
         function loadMenuFromFirestore() {
             onSnapshot(menuCollection, (snapshot) => {
@@ -471,20 +432,6 @@
                 currency: 'IDR',
                 minimumFractionDigits: 0
             }).format(number);
-        }
-
-        function formatTanggal(timestamp) {
-            if (!timestamp || !timestamp.toDate) {
-                return 'Tanggal tidak valid';
-            }
-            const date = timestamp.toDate();
-            return date.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }) + ' WIB';
         }
 
         function getTodayString() {
@@ -677,7 +624,7 @@
                 });
             }
             
-            checkoutButton.disabled = (cart.length === 0) || (auth.currentUser === null);
+            checkoutButton.disabled = (cart.length === 0);
             updatePaymentSummary();
         }
 
@@ -718,6 +665,9 @@
             } else {
                 addressForm.style.display = 'none';
                 deliveryFeeRow.style.display = 'none';
+                // Reset ongkir jika ganti servis
+                calculatedDeliveryFee = 0;
+                document.getElementById('delivery-zone').value = ''; // Reset dropdown
             }
             updatePaymentSummary();
         }
@@ -731,23 +681,28 @@
             }, 0);
 
             let serviceFee = SERVICE_FEE; 
-            let deliveryFee = currentService === 'Delivery' ? DELIVERY_FEE : 0;
             
+            let deliveryFee = currentService === 'Delivery' ? calculatedDeliveryFee : 0;
+            
+            // Cek gratis ongkir
+            let freeShippingApplied = false;
             if (currentService === 'Delivery' && subtotal >= FREE_SHIPPING_THRESHOLD) {
                 deliveryFee = 0; 
+                freeShippingApplied = true;
             }
             
             let total = subtotal + serviceFee + deliveryFee;
 
             document.getElementById('summary-subtotal').textContent = formatRupiah(subtotal);
             document.getElementById('summary-service-fee').textContent = formatRupiah(serviceFee);
-            document.getElementById('summary-delivery-fee').textContent = deliveryFee === 0 ? 'Gratis' : formatRupiah(deliveryFee);
+            document.getElementById('summary-delivery-fee').textContent = (freeShippingApplied || deliveryFee === 0) ? 'Gratis' : formatRupiah(deliveryFee);
             document.getElementById('summary-total').textContent = formatRupiah(total);
             
+            // Logika progress bar gratis ongkir
             const progressText = document.getElementById('free-shipping-text');
             const progressBar = document.getElementById('free-shipping-progress');
             if (currentService === 'Delivery') {
-                if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+                if (freeShippingApplied) {
                     progressText.textContent = 'Hore! Kamu dapat Gratis Ongkir! 🎉';
                     progressBar.style.width = '100%';
                     progressBar.classList.add('bg-green-500'); 
@@ -765,13 +720,14 @@
         }
 
         async function handleCheckout() {
-            if (cart.length === 0 || !auth.currentUser) return;
+            if (cart.length === 0) return;
 
             const customerName = document.getElementById('customer-name').value.trim();
             const customerPhone = document.getElementById('customer-phone').value.trim();
-            const address = document.getElementById('address').value.trim();
+            const zoneKey = document.getElementById('delivery-zone').value;
             const paymentMethod = document.getElementById('payment-method').value;
 
+            // Validasi
             if (customerName === '' || customerPhone === '') {
                 showNotification('Harap isi Nama dan No. Telepon!', 'error');
                 return;
@@ -780,34 +736,34 @@
                 showNotification('Harap gunakan format 62 untuk No. Telepon (misal: 62812...).', 'error');
                 return;
             }
-            if (currentService === 'Delivery' && address === '') {
-                showNotification('Harap isi alamat pengantaran!', 'error');
+            if (currentService === 'Delivery' && zoneKey === '') {
+                showNotification('Harap pilih zona pengantaran!', 'error');
                 return;
             }
             if (paymentMethod === '') {
                 showNotification('Harap pilih metode pembayaran!', 'error');
                 return;
             }
-            if (ADMIN_PHONE_NUMBER === '628XXXXXXXXXX') {
-                showNotification('Toko sedang offline. Coba lagi nanti.', 'error');
-                console.error("ADMIN_PHONE_NUMBER belum diatur!");
-                return;
-            }
 
-
+            // Hitung ulang total untuk dikirim ke DB
             let subtotal = cart.reduce((sum, item) => {
                 const itemPrice = item.price + item.addons.reduce((s, a) => s + a.price, 0);
                 return sum + (itemPrice * item.qty);
             }, 0);
             let serviceFee = SERVICE_FEE;
-            let deliveryFee = (currentService === 'Delivery' && subtotal < FREE_SHIPPING_THRESHOLD) ? DELIVERY_FEE : 0;
+            let deliveryFee = (currentService === 'Delivery' && subtotal < FREE_SHIPPING_THRESHOLD) ? calculatedDeliveryFee : 0;
             let total = subtotal + serviceFee + deliveryFee;
+            
+            let address = '';
+            if (currentService === 'Delivery') {
+                address = DELIVERY_ZONES[zoneKey].name;
+            }
 
             pendingOrderObject = {
                 customerName,
                 customerPhone,
                 service: currentService,
-                address: currentService === 'Delivery' ? address : '',
+                address: address, // Simpan nama zona
                 paymentMethod,
                 items: cart, 
                 subtotal,
@@ -854,10 +810,6 @@
             checkoutButton.innerText = 'Mengirim Pesanan...';
             
             try {
-                // Mendapatkan path lengkap untuk orders collection
-                const basePath = `artifacts/${appId}/public/data`;
-                const fullOrdersCollection = collection(db, `${basePath}/orders`);
-
                 await runTransaction(db, async (transaction) => {
                     const todayStr = getTodayString();
                     const counterRef = doc(countersCollection, 'dailyCounter');
@@ -873,18 +825,11 @@
                     
                     orderObject.queueNumber = newQueueNumber; 
                     
-                    // Simpan pesanan ke path yang benar
-                    const newOrderRef = doc(fullOrdersCollection); 
+                    const newOrderRef = doc(ordersCollection); 
                     transaction.set(newOrderRef, orderObject);
                 });
 
                 console.log("Pesanan berhasil dikirim dengan nomor antrian: ", orderObject.queueNumber);
-
-                if (orderObject.customerPhone) {
-                    loggedInUserPhone = orderObject.customerPhone;
-                    localStorage.setItem('dapurOmahUserPhone', orderObject.customerPhone);
-                    console.log('Status login disimpan untuk No. HP:', loggedInUserPhone);
-                }
                 
                 const waMsg = encodeURIComponent(`Halo Admin, saya ${orderObject.customerName} baru saja pesan. No. Antrian #${orderObject.queueNumber}. Mohon segera diproses.`);
                 const waUrl = `https://wa.me/${ADMIN_PHONE_NUMBER}?text=${waMsg}`;
@@ -899,16 +844,13 @@
                 renderCart();
                 updateCartCountBadge();
                 document.getElementById('customer-name').value = '';
-                document.getElementById('customer-phone').value = ''; 
-                document.getElementById('address').value = '';
-                
-                if(loggedInUserPhone) {
-                    document.getElementById('customer-phone').value = loggedInUserPhone;
-                }
+                document.getElementById('customer-phone').value = '';
+                document.getElementById('delivery-zone').value = '';
+                calculatedDeliveryFee = 0;
                 
                 setTimeout(() => {
                     showPage('menu-page');
-                }, 4000);
+                }, 4000); 
 
             } catch (e) {
                 console.error("Gagal mengirim pesanan: ", e);
@@ -920,144 +862,6 @@
             }
         }
         
-        // ===== FUNGSI LOGIN & RIWAYAT TRANSAKSI (DENGAN PERBAIKAN) =====
-
-        function showHistoryPage() {
-            if (loggedInUserPhone) {
-                showPage('history-page');
-                loadTransactionHistory();
-            } else {
-                showPage('login-page');
-            }
-        }
-
-        function handleLogin() {
-            const phoneInput = document.getElementById('login-phone');
-            const phoneValue = phoneInput.value.trim();
-
-            if (phoneValue === '' || !phoneValue.startsWith('62')) {
-                showNotification('Format No. Telepon salah. Harap gunakan format 628...', 'error');
-                return;
-            }
-
-            loggedInUserPhone = phoneValue;
-            localStorage.setItem('dapurOmahUserPhone', phoneValue);
-            
-            document.getElementById('customer-phone').value = loggedInUserPhone;
-            
-            showNotification('Login berhasil! Memuat riwayat...', 'success');
-            showPage('history-page');
-            loadTransactionHistory();
-        }
-
-        function handleLogout() {
-            loggedInUserPhone = null;
-            localStorage.removeItem('dapurOmahUserPhone');
-            showNotification('Anda telah logout.', 'success');
-            showPage('menu-page');
-        }
-
-        async function loadTransactionHistory() {
-            if (!loggedInUserPhone) return;
-
-            const loadingEl = document.getElementById('history-loading');
-            const emptyEl = document.getElementById('history-empty-state');
-            const container = document.getElementById('history-items-container');
-
-            loadingEl.style.display = 'block';
-            emptyEl.style.display = 'none';
-            container.innerHTML = '';
-
-            try {
-                // --- INI BAGIAN YANG PENTING ---
-                // Kode ini menggunakan 'collectionGroup'
-                // Ini SESUAI dengan Indeks 'Collection group' yang Anda buat
-                const q = query(
-                    collectionGroup(db, 'orders'), // <-- KODE YANG BENAR
-                    where("customerPhone", "==", loggedInUserPhone),
-                    orderBy("createdAt", "desc")
-                );
-                // ---------------------------------
-
-                const querySnapshot = await getDocs(q);
-
-                loadingEl.style.display = 'none';
-
-                if (querySnapshot.empty) {
-                    emptyEl.style.display = 'block';
-                } else {
-                    querySnapshot.forEach(doc => {
-                        const order = doc.data();
-                        
-                        const getStatusBadge = (status) => {
-                            switch(status) {
-                                case 'Selesai': return 'bg-green-100 text-green-800';
-                                case 'Dibatalkan': return 'bg-red-100 text-red-800';
-                                case 'Diproses': return 'bg-blue-100 text-blue-800';
-                                case 'Menunggu Konfirmasi': return 'bg-yellow-100 text-yellow-800';
-                                default: return 'bg-gray-100 text-gray-800';
-                            }
-                        };
-
-                        const itemsHTML = order.items.map(item => `
-                            <li class="flex items-center justify-between text-sm">
-                                <span class="text-gray-600">${item.qty}x ${item.name}</span>
-                                <span class="font-medium text-gray-800">${formatRupiah(item.price * item.qty)}</span>
-                            </li>
-                        `).join('');
-
-                        container.innerHTML += `
-                            <div class="bg-white p-6 rounded-2xl shadow">
-                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-4 mb-4">
-                                    <div>
-                                        <h4 class="text-xl font-bold text-gray-900">Pesanan #${order.queueNumber}</h4>
-                                        <p class="text-sm text-gray-500">${formatTanggal(order.createdAt)}</p>
-                                    </div>
-                                    <div class="mt-2 sm:mt-0">
-                                        <span class="text-xs font-bold py-1 px-3 rounded-full ${getStatusBadge(order.status)}">
-                                            ${order.status}
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <ul class="space-y-2 mb-4">
-                                    ${itemsHTML}
-                                </ul>
-
-                                <div class="border-t pt-4 space-y-2">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Subtotal</span>
-                                        <span class="font-medium text-gray-800">${formatRupiah(order.subtotal)}</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Biaya Layanan</span>
-                                        <span class="font-medium text-gray-800">${formatRupiah(order.serviceFee)}</span>
-                                    </div>
-                                    ${order.deliveryFee > 0 ? `
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Biaya Pengantaran</span>
-                                        <span class="font-medium text-gray-800">${formatRupiah(order.deliveryFee)}</span>
-                                    </div>
-                                    ` : ''}
-                                    <div class="flex justify-between text-lg font-bold text-gray-900">
-                                        <span>Total</span>
-                                        <span>${formatRupiah(order.total)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            } catch (error) {
-                console.error("Gagal memuat riwayat transaksi: ", error);
-                loadingEl.style.display = 'none';
-                // Tampilkan pesan error yang dilihat pengguna di screenshot
-                container.innerHTML = '<p class="text-center text-red-500">Gagal memuat riwayat. Coba lagi nanti.</p>';
-            }
-        }
-
-
-        // ===== FUNGSI NOTIFIKASI (TETAP SAMA) =====
         let notificationTimeout;
         function showNotification(message, type = 'success', action = null) {
             const notif = document.getElementById('custom-notification');
@@ -1076,8 +880,12 @@
                 notifAction.style.display = 'none';
             }
 
-            notif.classList.remove('bg-green-500', 'bg-red-500');
-            notif.classList.add(type === 'error' ? 'bg-red-500' : 'bg-green-500');
+            notif.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500');
+            let colorClass = 'bg-green-500';
+            if (type === 'error') colorClass = 'bg-red-500';
+            if (type === 'info') colorClass = 'bg-blue-500';
+            
+            notif.classList.add(colorClass);
             notif.style.display = 'block';
 
             notificationTimeout = setTimeout(() => {
